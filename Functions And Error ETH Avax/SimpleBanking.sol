@@ -15,13 +15,15 @@ contract SimpleBanking {
 
     function WindrawFund (uint _val) public{
         require (_val > 0, "Withdraw an amount greater than 0."); 
-        require (_val <= CurrentBalance, "You do not have enough balance to withdraw that amount."); 
         uint PreviousBalance = CurrentBalance; 
-        CurrentBalance -= _val; 
         
+        if (_val > CurrentBalance){
+            revert("You do not have enough balance to withdraw that amount."); 
+        }
+        CurrentBalance -= _val; 
+
         assert (CurrentBalance < PreviousBalance || CurrentBalance == 0); 
     } 
 }
-
 
 
