@@ -7,10 +7,10 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [shawarma, setShawarma] = useState(undefined);
   
   const [isLocked, setIsLocked] = useState(false);
 
-  const [withdrawAmount, setWithdrawAmount] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
 
   const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
@@ -85,6 +85,12 @@ export default function HomePage() {
     }
   }
 
+  const getShawarma = async() => {
+    if (atm) {
+      setShawarma((await atm.getShawarma()).toNumber());
+    }
+  }
+
   const deposit = async() => {
     if (atm) {
       const amount = parseFloat(depositAmount);
@@ -97,35 +103,35 @@ export default function HomePage() {
         return;
       }
 
-      let tx = await atm.deposit(amount);
+      let tx = await atm.addMoney(amount);
       await tx.wait()
       getBalance();
       setDepositAmount("");
     }
   }
 
-  const withdraw = async() => {
+  const buy1 = async() => {
+    const confirmed = window.confirm("You will pay 1 ETH for 1 Shawarma. Proceed?");
     if (atm) {
-      const amount = parseFloat (withdrawAmount);
-      if (isNaN(amount)) {
-        alert("Please enter a valid amount to withdraw");
-        return; 
-      }
-      else if (amount < 0) {
-        alert("Please enter an amount greater than 0");
-        return;
-      }
-      else if (amount > balance){
-        alert("Insufficient funds to withdraw");
-        return;
-      }
-
-      let tx = await atm.withdraw(amount);
+      let tx = await atm.buyShawarma(1);
       await tx.wait()
       getBalance();
-      setWithdrawAmount("");
+      getShawarma();
     }
   }
+
+
+  //shawarma
+  const buy1T1 = async() => {
+    const confirmed = window.confirm("You will pay 2 ETH for 1 Shawarma! This is a scam. Proceed?");
+    if (atm && confirmed) {
+      let tx = await atm.buyShawarma(2);
+      await tx.wait()
+      getBalance();
+      getShawarma();
+    }
+  }
+
 
   const initUser = () => {
     // Check to see if user has Metamask
@@ -142,10 +148,15 @@ export default function HomePage() {
       getBalance();
     }
 
+    if (shawarma == undefined) {
+      getShawarma();
+    }
+
     return (
       <div>
         <p>Your Account: {account}</p>
         <p>Your Balance: {balance}</p>
+        <p>Your Shawarma(s): {shawarma} </p>
         <p>Account is: {isLocked? "Unlocked" : "Locked"}</p>
         {!isLocked ? (
             <button onClick={unlockAccount}>Open Account</button>
@@ -153,16 +164,7 @@ export default function HomePage() {
             ) : (
               <>
               <button onClick={lockAccount}>Lock Account</button>
-              <div>
-                <input 
-                  type="number" 
-                  placeholder="Enter amount to withdraw" 
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                />
-                <button onClick={withdraw}>Withdraw ETH</button>
-              </div>
-
+              
               <div>
                 <input
                   type="number"
@@ -170,7 +172,16 @@ export default function HomePage() {
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(e.target.value)}
                 />
-                <button onClick={deposit}>Deposit ETH</button>
+                <button onClick={deposit}>Add ETH</button>
+              </div>
+
+              <div>
+                <button onClick={buy1}>'Buy 1 Shawarma'</button>
+                
+              </div>
+
+              <div>
+                <button onClick={buy1T1}>'Buy 1 take 2 Promo'</button>
               </div>
               </>
             )}
@@ -183,7 +194,7 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <header><h1>Welcome to the Metacrafters ATM!</h1></header>
+      <header><h1>Welcome to Shawarmahan in Dapitan!</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
