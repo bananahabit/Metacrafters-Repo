@@ -4,7 +4,7 @@ A simple solidity contract that is displayed in a browser.
 
 ## Description
 
-This project is a simple contract that allows the user to withdraw and deposit ETH into their Metamask account. It also include a feature that locks and unlocks an account before proceeding to the ATM-like website. 
+This project is a simple contract that allows the user to withdraw ETH into their Metamask account and use that to buy Shawarmas. It also include a feature that locks and unlocks an account before proceeding to the ATM-like website. 
 
 
 ### Executing program
